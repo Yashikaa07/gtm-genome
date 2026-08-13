@@ -1,30 +1,10 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
-type ScrapedPage = {
+type Source = {
   url: string;
   title: string;
-  description: string;
-  text: string;
 };
-
-const PAGE_KEYWORDS = [
-  "product",
-  "products",
-  "solution",
-  "solutions",
-  "use-case",
-  "use-cases",
-  "pricing",
-  "customer",
-  "customers",
-  "case-study",
-  "case-studies",
-  "integration",
-  "integrations",
-  "about",
-  "platform",
-];
 
 function normalizeUrl(input: string) {
   const value = input.trim();
@@ -34,6 +14,13 @@ function normalizeUrl(input: string) {
   }
 
   return value;
+}
+
+function cleanText(value: string) {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/\u00a0/g, " ")
+    .trim();
 }
 
 function isSafePublicUrl(value: string) {
@@ -62,30 +49,21 @@ function isSafePublicUrl(value: string) {
   }
 }
 
-function cleanText(value: string) {
-  return value
-    .replace(/\s+/g, " ")
-    .replace(/\u00a0/g, " ")
-    .trim();
-}
-
-async function scrapePage(url: string): Promise<{
-  page: ScrapedPage;
-  links: string[];
-}> {
+async function readHomepage(url: string) {
   const response = await fetch(url, {
     headers: {
       "User-Agent":
-        "Mozilla/5.0 (compatible; GTMGenomeResearchBot/1.0)",
+        "Mozilla/5.0 (compatible; GTMGenome/2.0)",
       Accept: "text/html,application/xhtml+xml",
     },
     redirect: "follow",
     cache: "no-store",
+    signal: AbortSignal.timeout(7000),
   });
 
   if (!response.ok) {
     throw new Error(
-      `Could not read ${url}. Status ${response.status}`
+      `Could not read website. Status ${response.status}`
     );
   }
 
@@ -93,7 +71,9 @@ async function scrapePage(url: string): Promise<{
     response.headers.get("content-type") || "";
 
   if (!contentType.includes("text/html")) {
-    throw new Error(`${url} did not return HTML.`);
+    throw new Error(
+      "The supplied URL did not return an HTML website."
+    );
   }
 
   const html = await response.text();
@@ -109,12 +89,15 @@ async function scrapePage(url: string): Promise<{
       "iframe",
       "canvas",
       "form",
+      "footer",
     ].join(",")
   ).remove();
 
-  const title = cleanText($("title").first().text());
+  const title = cleanText(
+    $("title").first().text()
+  );
 
-  const description = cleanText(
+  const metaDescription = cleanText(
     $('meta[name="description"]').attr("content") || ""
   );
 
@@ -124,7 +107,7 @@ async function scrapePage(url: string): Promise<{
     )
     .get()
     .filter(Boolean)
-    .slice(0, 40);
+    .slice(0, 20);
 
   const paragraphs = $("p, li")
     .map((_, element) =>
@@ -134,96 +117,28 @@ async function scrapePage(url: string): Promise<{
     .filter(
       (text) =>
         text.length >= 35 &&
-        text.length <= 1000
+        text.length <= 650
     )
-    .slice(0, 120);
+    .slice(0, 45);
 
-  const text = [
-    description,
+  const websiteText = [
+    `TITLE: ${title}`,
+    `DESCRIPTION: ${metaDescription}`,
+    "",
+    "HEADINGS:",
     ...headings,
+    "",
+    "CONTENT:",
     ...paragraphs,
   ]
     .filter(Boolean)
     .join("\n")
-    .slice(0, 16000);
-
-  const base = new URL(url);
-
-  const links = $("a[href]")
-    .map((_, element) => {
-      const href =
-        $(element).attr("href") || "";
-
-      try {
-        const target = new URL(href, base);
-
-        target.hash = "";
-
-        return target.toString();
-      } catch {
-        return "";
-      }
-    })
-    .get()
-    .filter(Boolean);
+    .slice(0, 7500);
 
   return {
-    page: {
-      url,
-      title,
-      description,
-      text,
-    },
-    links,
+    title,
+    text: websiteText,
   };
-}
-
-function rankInternalLinks(
-  homepage: string,
-  links: string[]
-) {
-  const origin = new URL(homepage).origin;
-
-  const unique = Array.from(new Set(links));
-
-  return unique
-    .filter((link) => {
-      try {
-        const parsed = new URL(link);
-
-        return (
-          parsed.origin === origin &&
-          parsed.pathname !== "/" &&
-          !parsed.pathname.match(
-            /\.(jpg|jpeg|png|gif|svg|webp|pdf|zip|xml)$/i
-          )
-        );
-      } catch {
-        return false;
-      }
-    })
-    .map((link) => {
-      const lower = link.toLowerCase();
-
-      let score = 0;
-
-      PAGE_KEYWORDS.forEach(
-        (keyword, index) => {
-          if (lower.includes(keyword)) {
-            score +=
-              PAGE_KEYWORDS.length - index;
-          }
-        }
-      );
-
-      return {
-        link,
-        score,
-      };
-    })
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .map((item) => item.link);
 }
 
 export async function POST(request: Request) {
@@ -234,38 +149,27 @@ export async function POST(request: Request) {
       body?.url || ""
     );
 
-    if (!inputUrl) {
+    if (
+      !inputUrl ||
+      !isSafePublicUrl(inputUrl)
+    ) {
       return NextResponse.json(
         {
           error:
-            "Website URL is required.",
+            "Please enter a valid public company website.",
         },
         { status: 400 }
       );
     }
 
-    if (!isSafePublicUrl(inputUrl)) {
-      return NextResponse.json(
-        {
-          error:
-            "Please provide a valid public website URL.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // ---------------------------------------
-    // 1. READ HOMEPAGE
-    // ---------------------------------------
-
-    let homepageResult;
+    let homepage;
 
     try {
-      homepageResult =
-        await scrapePage(inputUrl);
+      homepage =
+        await readHomepage(inputUrl);
     } catch (error) {
       console.error(
-        "Homepage scraping failed:",
+        "Website reading error:",
         error
       );
 
@@ -278,113 +182,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const pages: ScrapedPage[] = [
-      homepageResult.page,
-    ];
-
-    // ---------------------------------------
-    // 2. DISCOVER HIGH-VALUE INTERNAL PAGES
-    // ---------------------------------------
-
-    const discoveredLinks =
-      rankInternalLinks(
-        inputUrl,
-        homepageResult.links
-      );
-
-    const selectedLinks =
-      discoveredLinks.slice(0, 4);
-
-    // ---------------------------------------
-    // 3. SCRAPE UP TO 4 MORE PAGES
-    // ---------------------------------------
-
-    const extraResults =
-      await Promise.allSettled(
-        selectedLinks.map((link) =>
-          scrapePage(link)
-        )
-      );
-
-    for (const result of extraResults) {
-      if (
-        result.status === "fulfilled"
-      ) {
-        pages.push(result.value.page);
-      }
-    }
-
-    // ---------------------------------------
-    // 4. BUILD RESEARCH CORPUS
-    // ---------------------------------------
-
-    const researchCorpus = pages
-      .map(
-        (page, index) => `
-==============================
-SOURCE ${index + 1}
-URL: ${page.url}
-TITLE: ${page.title}
-DESCRIPTION: ${page.description}
-
-CONTENT:
-${page.text}
-==============================
-`
-      )
-      .join("\n")
-      .slice(0, 50000);
-
-    const sourceList = pages.map(
-      (page, index) => ({
-        id: index + 1,
-        url: page.url,
-        title:
-          page.title ||
-          `Source ${index + 1}`,
-      })
-    );
-
-    // ---------------------------------------
-    // 5. AI RESEARCH PROMPT
-    // ---------------------------------------
+    const source: Source = {
+      url: inputUrl,
+      title:
+        homepage.title || inputUrl,
+    };
 
     const prompt = `
-You are an elite GTM strategist, market researcher, product marketer, and growth analyst.
+You are a senior GTM strategist, product marketer and market researcher.
 
-You are analyzing a company using ACTUAL WEBSITE CONTENT gathered from multiple pages.
+Create a FAST, concise GTM Quick Scan using ONLY the supplied website content.
 
-COMPANY WEBSITE:
+WEBSITE:
 ${inputUrl}
 
-SOURCES:
-${JSON.stringify(sourceList, null, 2)}
+WEBSITE CONTENT:
+${homepage.text}
 
-RESEARCH CORPUS:
-${researchCorpus}
-
-Create a rigorous, research-friendly GTM intelligence report.
+TASK:
+Turn the website into an actionable GTM intelligence report.
 
 RULES:
-
-1. Base conclusions primarily on the supplied website evidence.
-2. Do not claim access to information outside these sources.
-3. Do not invent revenue, customers, conversion rates, market share, headcount, or financial metrics.
-4. Strategic scores are AI estimates from 0-100.
-5. Channel percentages must total exactly 100.
-6. Return 3-5 ICP segments.
-7. Return 3-5 pain points.
-8. Return 3-5 GTM opportunities.
-9. Evidence records must reference one of the supplied URLs.
-10. Evidence snippets must be short paraphrases or short extracted ideas from the supplied website content.
-11. Use confidence scores conservatively.
-12. If evidence is weak, say so.
-13. Return ONLY valid JSON matching the schema.
+- Be specific and concise.
+- Do not invent revenue, customers, market share, headcount or financial metrics.
+- Scores are AI strategic estimates from 0 to 100.
+- Return exactly 2 ICP segments.
+- Return exactly 2 pain points.
+- Return exactly 2 GTM opportunities.
+- Return 3-4 channels whose percentages total exactly 100.
+- Keep the executive summary under 70 words.
+- Keep each rationale under 35 words.
+- Evidence must come from the supplied homepage.
+- Return no more than 3 evidence records.
+- If evidence is weak, say so.
+- Return ONLY JSON matching the schema.
 `;
-
-    // ---------------------------------------
-    // 6. OPENROUTER
-    // ---------------------------------------
 
     const aiResponse = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -392,7 +224,9 @@ RULES:
         method: "POST",
 
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization:
+            `Bearer ${process.env.OPENROUTER_API_KEY}`,
+
           "Content-Type":
             "application/json",
         },
@@ -400,7 +234,7 @@ RULES:
         body: JSON.stringify({
           model: "openrouter/free",
 
-          temperature: 0.2,
+          temperature: 0.15,
 
           messages: [
             {
@@ -413,13 +247,12 @@ RULES:
             type: "json_schema",
 
             json_schema: {
-              name: "gtm_research",
+              name: "gtm_quick_scan",
 
               strict: true,
 
               schema: {
                 type: "object",
-
                 additionalProperties: false,
 
                 properties: {
@@ -441,9 +274,7 @@ RULES:
 
                   score_breakdown: {
                     type: "object",
-
-                    additionalProperties:
-                      false,
+                    additionalProperties: false,
 
                     properties: {
                       icp_fit: {
@@ -478,9 +309,7 @@ RULES:
 
                   icp: {
                     type: "object",
-
-                    additionalProperties:
-                      false,
+                    additionalProperties: false,
 
                     properties: {
                       segment: {
@@ -513,9 +342,7 @@ RULES:
 
                     items: {
                       type: "object",
-
-                      additionalProperties:
-                        false,
+                      additionalProperties: false,
 
                       properties: {
                         segment: {
@@ -541,9 +368,7 @@ RULES:
 
                   buyer: {
                     type: "object",
-
-                    additionalProperties:
-                      false,
+                    additionalProperties: false,
 
                     properties: {
                       title: {
@@ -570,9 +395,7 @@ RULES:
 
                     items: {
                       type: "object",
-
-                      additionalProperties:
-                        false,
+                      additionalProperties: false,
 
                       properties: {
                         pain: {
@@ -608,9 +431,7 @@ RULES:
 
                     items: {
                       type: "object",
-
-                      additionalProperties:
-                        false,
+                      additionalProperties: false,
 
                       properties: {
                         channel: {
@@ -634,9 +455,7 @@ RULES:
 
                     items: {
                       type: "object",
-
-                      additionalProperties:
-                        false,
+                      additionalProperties: false,
 
                       properties: {
                         name: {
@@ -665,9 +484,7 @@ RULES:
 
                     items: {
                       type: "object",
-
-                      additionalProperties:
-                        false,
+                      additionalProperties: false,
 
                       properties: {
                         source_url: {
@@ -706,9 +523,7 @@ RULES:
 
                     items: {
                       type: "object",
-
-                      additionalProperties:
-                        false,
+                      additionalProperties: false,
 
                       properties: {
                         url: {
@@ -729,9 +544,7 @@ RULES:
 
                   gtm_experiment: {
                     type: "object",
-
-                    additionalProperties:
-                      false,
+                    additionalProperties: false,
 
                     properties: {
                       hypothesis: {
@@ -826,15 +639,15 @@ RULES:
         {
           error:
             data?.error?.message ||
-            "OpenRouter request failed.",
+            "AI analysis failed.",
         },
         { status: 500 }
       );
     }
 
     const text =
-      data?.choices?.[0]?.message
-        ?.content;
+      data?.choices?.[0]
+        ?.message?.content;
 
     if (!text) {
       return NextResponse.json(
@@ -849,42 +662,38 @@ RULES:
     let analysis;
 
     try {
-      analysis = JSON.parse(text);
+      analysis =
+        JSON.parse(text);
     } catch (error) {
       console.error(
-        "JSON parse failed:",
+        "JSON parse error:",
         error
       );
 
       console.error(
-        "Raw model response:",
+        "Raw response:",
         text
       );
 
       return NextResponse.json(
         {
           error:
-            "The AI returned malformed research data. Please try again.",
+            "The AI returned malformed research. Please try again.",
         },
         { status: 500 }
       );
     }
 
-    // Use the pages we actually fetched as
-    // authoritative source metadata.
-    analysis.sources_analyzed =
-      pages.map((page) => ({
-        url: page.url,
-        title:
-          page.title || page.url,
-      }));
+    analysis.sources_analyzed = [
+      source,
+    ];
 
     return NextResponse.json(
       analysis
     );
   } catch (error) {
     console.error(
-      "GTM research error:",
+      "GTM Genome error:",
       error
     );
 
