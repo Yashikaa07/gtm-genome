@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
+import ProspectingWorkspace from "./components/ProspectingWorkspace";
 import {
   Bar,
   BarChart,
@@ -535,6 +537,8 @@ Best`
 
             <div className="flex items-center gap-2">
 
+              <Link href="/discover" className="rounded-xl border border-violet-500/40 bg-violet-500/10 px-4 py-2.5 text-xs text-violet-200 hover:bg-violet-500/20">Buyer discovery ↗</Link>
+
               <a
                 href={LINKEDIN}
                 target="_blank"
@@ -798,6 +802,7 @@ Best`
             {[
               ["Overview", "#overview"],
               ["ICP", "#icp"],
+              ["Account Discovery", "#discovery"],
               ["Buyer Pain", "#pain"],
               [
                 "Opportunities",
@@ -1450,6 +1455,8 @@ Best`
               </div>
 
             </section>
+
+            <ProspectingWorkspace context={analysis} />
 
             <section
               id="experiment"
