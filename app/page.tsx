@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import Link from "next/link";
+import ResearchLanding from "./components/ResearchLanding";
 import ProspectingWorkspace from "./components/ProspectingWorkspace";
 import {
   Bar,
@@ -492,297 +492,20 @@ Best`
       : "";
 
   if (!analysis) {
-    return (
-      <main
-        className="min-h-screen overflow-hidden text-white"
-        style={{
-          background:
-            "radial-gradient(circle at 82% 8%, rgba(124,58,237,.28), transparent 28%), radial-gradient(circle at 9% 90%, rgba(14,165,233,.16), transparent 29%), #050816",
-        }}
-      >
-        <div className="pointer-events-none fixed inset-0 opacity-[0.14]">
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px)",
-
-              backgroundSize:
-                "44px 44px",
-            }}
-          />
-        </div>
-
-        <section className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-7 sm:px-8 lg:px-10">
-
-          <header className="flex items-center justify-between">
-
-            <div className="flex items-center gap-3">
-
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-400/20 bg-violet-500/10 text-xl">
-                🧬
-              </div>
-
-              <div>
-                <p className="font-semibold">
-                  GTM Genome
-                </p>
-
-                <p className="text-xs text-slate-500">
-                  AI GTM Research Engine
-                </p>
-              </div>
-
-            </div>
-
-            <div className="flex items-center gap-2">
-
-              <Link href="/discover" className="rounded-xl border border-violet-500/40 bg-violet-500/10 px-4 py-2.5 text-xs text-violet-200 hover:bg-violet-500/20">Buyer discovery ↗</Link>
-
-              <a
-                href={LINKEDIN}
-                target="_blank"
-                rel="noreferrer"
-                className="hidden rounded-xl border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-xs text-slate-400 transition hover:border-blue-500/40 hover:text-blue-300 sm:block"
-              >
-                LinkedIn ↗
-              </a>
-
-              <a
-                href={GITHUB}
-                target="_blank"
-                rel="noreferrer"
-                className="hidden rounded-xl border border-slate-800 bg-slate-950/40 px-4 py-2.5 text-xs text-slate-400 transition hover:border-violet-500/40 hover:text-violet-300 sm:block"
-              >
-                GitHub ↗
-              </a>
-
-            </div>
-
-          </header>
-
-          <div className="flex flex-1 items-center py-16">
-
-            <div className="w-full max-w-5xl">
-
-              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-200">
-
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-
-                ⚡ GTM Quick Scan
-              </div>
-
-              <h1 className="max-w-5xl text-5xl font-semibold leading-[1.02] tracking-[-0.045em] text-white sm:text-7xl lg:text-[78px]">
-
-                Turn any company into{" "}
-
-                <span className="bg-gradient-to-r from-violet-300 via-blue-300 to-cyan-300 bg-clip-text text-transparent">
-                  actionable GTM intelligence.
-                </span>
-
-              </h1>
-
-              <p className="mt-7 max-w-3xl text-lg leading-8 text-slate-400 sm:text-xl">
-
-                From one company URL, map the ICP,
-                buyer, pain, positioning, channel
-                strategy, opportunities and next GTM
-                experiment.
-
-              </p>
-
-              <div className="mt-7 flex flex-wrap items-center gap-3">
-
-                <div className="h-px w-8 bg-gradient-to-r from-violet-400 to-cyan-400" />
-
-                <p className="text-sm text-slate-500">
-
-                  Built by{" "}
-
-                  <span className="font-medium text-slate-200">
-                    Yashika Hemnani
-                  </span>
-
-                </p>
-
-                <a
-                  href={LINKEDIN}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs text-blue-400 hover:text-blue-300"
-                >
-                  LinkedIn ↗
-                </a>
-
-                <a
-                  href={GITHUB}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs text-violet-400 hover:text-violet-300"
-                >
-                  GitHub ↗
-                </a>
-
-              </div>
-
-              <div className="mt-10 max-w-4xl rounded-3xl border border-slate-800/80 bg-[#09101f]/85 p-2 shadow-2xl shadow-violet-950/30 backdrop-blur-xl">
-
-                <div className="flex flex-col gap-2 sm:flex-row">
-
-                  <input
-                    value={url}
-                    onChange={(e) =>
-                      setUrl(
-                        e.target.value
-                      )
-                    }
-                    onKeyDown={(e) => {
-                      if (
-                        e.key ===
-                        "Enter"
-                      ) {
-                        analyze();
-                      }
-                    }}
-                    placeholder="https://company.com"
-                    className="min-w-0 flex-1 rounded-2xl bg-transparent px-5 py-4 text-base outline-none placeholder:text-slate-600"
-                  />
-
-                  <button
-                    onClick={analyze}
-                    disabled={
-                      loading ||
-                      !url.trim()
-                    }
-                    className="rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-500 to-blue-500 px-8 py-4 font-medium shadow-lg shadow-violet-950/40 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    {loading
-                      ? "Scanning..."
-                      : "Quick Scan →"}
-                  </button>
-
-                </div>
-
-              </div>
-
-              {loading && (
-                <div className="mt-6 max-w-4xl rounded-3xl border border-slate-800 bg-[#09101f]/90 p-6">
-
-                  <div className="flex items-center justify-between">
-
-                    <div>
-
-                      <p className="text-sm font-medium">
-                        Building GTM report
-                      </p>
-
-                      <p className="mt-1 text-xs text-slate-500">
-                        {
-                          loadingSteps[
-                            loadingStep
-                          ]
-                        }
-                      </p>
-
-                    </div>
-
-                    <span className="text-sm font-medium text-violet-300">
-                      {progress}%
-                    </span>
-
-                  </div>
-
-                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-800">
-
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-400 transition-all duration-500"
-                      style={{
-                        width:
-                          `${progress}%`,
-                      }}
-                    />
-
-                  </div>
-
-                  <div className="mt-5 grid gap-2 sm:grid-cols-5">
-
-                    {loadingSteps.map(
-                      (
-                        step,
-                        index
-                      ) => (
-                        <div
-                          key={
-                            step
-                          }
-                          className={`rounded-xl border px-3 py-3 text-[11px] ${
-                            index <
-                            loadingStep
-                              ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"
-                              : index ===
-                                loadingStep
-                              ? "border-violet-500/30 bg-violet-500/10 text-violet-200"
-                              : "border-slate-800 text-slate-600"
-                          }`}
-                        >
-                          {index <
-                          loadingStep
-                            ? "✓ "
-                            : index ===
-                              loadingStep
-                            ? "● "
-                            : "○ "}
-
-                          {step}
-                        </div>
-                      )
-                    )}
-
-                  </div>
-
-                </div>
-              )}
-
-              {error && (
-                <div className="mt-6 max-w-4xl rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-red-300">
-                  {error}
-                </div>
-              )}
-
-              {!loading && (
-                <div className="mt-8 flex flex-wrap gap-3 text-xs text-slate-500">
-
-                  <Badge text="Homepage research" />
-
-                  <Badge text="Visual scoring" />
-
-                  <Badge text="Evidence-backed" />
-
-                  <Badge text="GTM experiment" />
-
-                </div>
-              )}
-
-            </div>
-
-          </div>
-
-        </section>
-      </main>
-    );
+    return <ResearchLanding url={url} setUrl={setUrl} analyze={analyze} loading={loading} error={error} progress={progress} loadingStep={loadingSteps[loadingStep]} />;
   }
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[#fafaf8] text-slate-900">
 
       <div className="flex">
 
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-slate-800/80 bg-[#070c19] px-5 py-6 lg:block">
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-slate-200 bg-white px-5 py-6 lg:block">
 
           <div className="mb-8 flex items-center gap-3">
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500">
-              🧬
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+              ✳
             </div>
 
             <div>
@@ -790,7 +513,7 @@ Best`
                 GTM Genome
               </p>
 
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-600">
                 Quick Scan
               </p>
             </div>
@@ -830,8 +553,8 @@ Best`
                   href={href}
                   className={`block rounded-xl px-3 py-2.5 ${
                     index === 0
-                      ? "bg-violet-500/15 text-violet-200"
-                      : "text-slate-500 hover:bg-slate-900 hover:text-white"
+                      ? "bg-violet-500/15 text-violet-700"
+                      : "text-slate-600 hover:bg-violet-50 hover:text-violet-700"
                   }`}
                 >
                   {label}
@@ -841,13 +564,13 @@ Best`
 
           </nav>
 
-          <div className="absolute bottom-6 left-5 right-5 rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
+          <div className="absolute bottom-6 left-5 right-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-600">
               Built by
             </p>
 
-            <p className="mt-1 text-sm font-medium text-slate-200">
+            <p className="mt-1 text-sm font-medium text-slate-800">
               Yashika Hemnani
             </p>
 
@@ -857,7 +580,7 @@ Best`
                 href={LINKEDIN}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue-400"
+                className="text-blue-700"
               >
                 LinkedIn ↗
               </a>
@@ -879,11 +602,11 @@ Best`
 
         <section className="min-w-0 flex-1">
 
-          <div className="sticky top-0 z-20 border-b border-slate-800/70 bg-[#050816]/90 px-5 py-4 backdrop-blur-xl xl:px-9">
+          <div className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur-xl xl:px-9">
 
             <div className="flex flex-col gap-3 md:flex-row">
 
-              <div className="flex flex-1 rounded-2xl border border-slate-800 bg-slate-950/80">
+              <div className="flex flex-1 rounded-2xl border border-slate-200 bg-white">
 
                 <input
                   value={url}
@@ -898,7 +621,7 @@ Best`
                 <button
                   onClick={analyze}
                   disabled={loading}
-                  className="m-1 rounded-xl bg-gradient-to-r from-violet-600 to-blue-500 px-5 py-2.5 text-sm font-medium"
+                  className="m-1 rounded-xl bg-violet-600 text-white hover:bg-violet-700 px-5 py-2.5 text-sm font-medium"
                 >
                   Analyze
                 </button>
@@ -921,7 +644,7 @@ Best`
                       true
                     );
                   }}
-                  className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
                 >
                   {savedReport
                     ? "✓ Saved"
@@ -938,7 +661,7 @@ Best`
 
             <section
               id="overview"
-              className="rounded-3xl border border-slate-800 bg-[#0b1222] p-7"
+              className="rounded-3xl border border-slate-200 bg-white p-7"
             >
 
               <div className="grid gap-8 xl:grid-cols-[1fr_240px]">
@@ -951,21 +674,21 @@ Best`
                       {company}
                     </h1>
 
-                    <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-300">
+                    <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-700">
                       Quick Scan Complete
                     </span>
 
                   </div>
 
-                  <p className="mt-2 text-slate-500">
+                  <p className="mt-2 text-slate-600">
                     {category}
                   </p>
 
-                  <p className="mt-7 text-xs font-medium uppercase tracking-[0.18em] text-violet-300">
+                  <p className="mt-7 text-xs font-medium uppercase tracking-[0.18em] text-violet-700">
                     Executive Summary
                   </p>
 
-                  <p className="mt-3 max-w-4xl leading-7 text-slate-300">
+                  <p className="mt-3 max-w-4xl leading-7 text-slate-700">
                     {executiveSummary}
                   </p>
 
@@ -1015,7 +738,7 @@ Best`
                   >
 
                     <CartesianGrid
-                      stroke="rgba(148,163,184,.07)"
+                      stroke="#e8eaf0"
                       horizontal={false}
                     />
 
@@ -1035,7 +758,7 @@ Best`
                       dataKey="segment"
                       width={150}
                       tick={{
-                        fill: "#94a3b8",
+                        fill: "#64748b",
                         fontSize: 11,
                       }}
                       axisLine={false}
@@ -1044,7 +767,7 @@ Best`
 
                     <Tooltip
                       content={
-                        <DarkTooltip />
+                        <ResearchTooltip />
                       }
                     />
 
@@ -1129,7 +852,7 @@ Best`
 
                       <Tooltip
                         content={
-                          <DarkTooltip />
+                          <ResearchTooltip />
                         }
                       />
 
@@ -1151,7 +874,7 @@ Best`
                           className="flex justify-between gap-3 text-xs"
                         >
 
-                          <span className="text-slate-400">
+                          <span className="text-slate-600">
                             {safeText(
                               item.channel
                             )}
@@ -1196,7 +919,7 @@ Best`
                   >
 
                     <CartesianGrid
-                      stroke="rgba(148,163,184,.07)"
+                      stroke="#e8eaf0"
                       vertical={false}
                     />
 
@@ -1222,7 +945,7 @@ Best`
 
                     <Tooltip
                       content={
-                        <DarkTooltip />
+                        <ResearchTooltip />
                       }
                     />
 
@@ -1289,7 +1012,7 @@ Best`
                         dataKey="name"
                         width={145}
                         tick={{
-                          fill: "#94a3b8",
+                          fill: "#64748b",
                           fontSize: 10,
                         }}
                         axisLine={
@@ -1302,7 +1025,7 @@ Best`
 
                       <Tooltip
                         content={
-                          <DarkTooltip />
+                          <ResearchTooltip />
                         }
                       />
 
@@ -1361,7 +1084,7 @@ Best`
 
             <section
               id="evidence"
-              className="mt-5 rounded-3xl border border-slate-800 bg-[#0b1222] p-6"
+              className="mt-5 rounded-3xl border border-slate-200 bg-white p-6"
             >
 
               <div className="flex items-center justify-between">
@@ -1371,12 +1094,12 @@ Best`
                     Research Evidence
                   </p>
 
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-600">
                     Homepage evidence supporting the Quick Scan
                   </p>
                 </div>
 
-                <span className="rounded-full border border-slate-800 px-3 py-1 text-xs text-slate-500">
+                <span className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600">
                   {
                     evidence.length
                   }{" "}
@@ -1397,20 +1120,20 @@ Best`
                         key={
                           index
                         }
-                        className="rounded-2xl border border-slate-800 bg-slate-950/40 p-5"
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
                       >
 
                         <div className="flex flex-col gap-3 md:flex-row md:justify-between">
 
                           <div>
 
-                            <p className="text-sm leading-6 text-slate-300">
+                            <p className="text-sm leading-6 text-slate-700">
                               {safeText(
                                 item.evidence
                               )}
                             </p>
 
-                            <p className="mt-2 text-xs text-slate-500">
+                            <p className="mt-2 text-xs text-slate-600">
                               Supports:{" "}
                               {safeText(
                                 item.supports
@@ -1421,7 +1144,7 @@ Best`
 
                           <div className="shrink-0 text-xs">
 
-                            <p className="text-emerald-400">
+                            <p className="text-emerald-700">
                               {safeScore(
                                 item.confidence
                               )}
@@ -1434,7 +1157,7 @@ Best`
                               }
                               target="_blank"
                               rel="noreferrer"
-                              className="mt-2 block text-blue-400"
+                              className="mt-2 block text-blue-700"
                             >
                               Source ↗
                             </a>
@@ -1463,9 +1186,9 @@ Best`
               className="mt-5 grid gap-5 xl:grid-cols-2"
             >
 
-              <div className="rounded-3xl border border-slate-800 bg-[#0b1222] p-7">
+              <div className="rounded-3xl border border-slate-200 bg-white p-7">
 
-                <p className="text-sm font-medium text-violet-300">
+                <p className="text-sm font-medium text-violet-700">
                   Recommended GTM Experiment
                 </p>
 
@@ -1540,7 +1263,7 @@ Best`
                         true
                       )
                     }
-                    className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-blue-500 px-5 py-3 text-sm font-medium"
+                    className="flex-1 rounded-xl bg-violet-600 text-white hover:bg-violet-700 px-5 py-3 text-sm font-medium"
                   >
                     {savedExperiment
                       ? "✓ Experiment Saved"
@@ -1553,7 +1276,7 @@ Best`
                         true
                       )
                     }
-                    className="flex-1 rounded-xl border border-slate-700 px-5 py-3 text-sm"
+                    className="flex-1 rounded-xl border border-slate-300 px-5 py-3 text-sm"
                   >
                     Generate Outreach
                   </button>
@@ -1564,17 +1287,17 @@ Best`
 
               <div
                 id="outreach"
-                className="rounded-3xl border border-slate-800 bg-[#0b1222] p-7"
+                className="rounded-3xl border border-slate-200 bg-white p-7"
               >
 
-                <p className="text-sm font-medium text-blue-300">
+                <p className="text-sm font-medium text-blue-700">
                   Outreach Generator
                 </p>
 
                 {!showOutreach ? (
                   <div className="flex min-h-[330px] flex-col items-center justify-center text-center">
 
-                    <div className="text-3xl text-blue-400">
+                    <div className="text-3xl text-blue-700">
                       ✦
                     </div>
 
@@ -1582,7 +1305,7 @@ Best`
                       Turn research into conversation
                     </p>
 
-                    <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
+                    <p className="mt-2 max-w-xs text-sm leading-6 text-slate-600">
                       Create buyer-specific LinkedIn and email copy from the GTM analysis.
                     </p>
 
@@ -1592,7 +1315,7 @@ Best`
                           true
                         )
                       }
-                      className="mt-5 rounded-xl bg-blue-500/10 px-5 py-3 text-sm text-blue-300"
+                      className="mt-5 rounded-xl bg-blue-500/10 px-5 py-3 text-sm text-blue-700"
                     >
                       Generate Messages
                     </button>
@@ -1629,7 +1352,7 @@ Best`
 
             </section>
 
-            <footer className="mt-8 flex flex-col justify-between gap-3 border-t border-slate-800 py-7 text-xs text-slate-600 sm:flex-row">
+            <footer className="mt-8 flex flex-col justify-between gap-3 border-t border-slate-200 py-7 text-xs text-slate-600 sm:flex-row">
 
               <span>
                 AI-generated GTM strategic estimates — not verified company performance metrics.
@@ -1637,7 +1360,7 @@ Best`
 
               <span>
                 Built by{" "}
-                <span className="text-slate-400">
+                <span className="text-slate-600">
                   Yashika Hemnani
                 </span>{" "}
                 ·{" "}
@@ -1646,7 +1369,7 @@ Best`
                   href={LINKEDIN}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-blue-400"
+                  className="text-blue-700"
                 >
                   LinkedIn
                 </a>{" "}
@@ -1676,18 +1399,6 @@ Best`
   );
 }
 
-function Badge({
-  text,
-}: {
-  text: string;
-}) {
-  return (
-    <span className="rounded-full border border-slate-800 px-3 py-2">
-      ✓ {text}
-    </span>
-  );
-}
-
 function ReadinessCircle({
   score,
 }: {
@@ -1702,17 +1413,17 @@ function ReadinessCircle({
       <div
         className="flex h-36 w-36 items-center justify-center rounded-full p-[5px]"
         style={{
-          background: `conic-gradient(${COLORS.cyan} 0deg, ${COLORS.purple} ${degrees}deg, #1e293b ${degrees}deg 360deg)`,
+          background: `conic-gradient(${COLORS.cyan} 0deg, ${COLORS.purple} ${degrees}deg, #e9e5f4 ${degrees}deg 360deg)`,
         }}
       >
 
-        <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-[#0b1222]">
+        <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-white">
 
           <p className="text-4xl font-semibold">
             {score}
           </p>
 
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600">
             GTM readiness
           </p>
 
@@ -1734,9 +1445,9 @@ function ScoreCard({
   color: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-[#0b1222] p-5">
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-600">
         {label}
       </p>
 
@@ -1747,7 +1458,7 @@ function ScoreCard({
         {score}
       </p>
 
-      <div className="mt-4 h-1.5 rounded-full bg-slate-800">
+      <div className="mt-4 h-1.5 rounded-full bg-slate-100">
 
         <div
           className="h-full rounded-full"
@@ -1775,13 +1486,13 @@ function ChartCard({
   children: ReactNode;
 }) {
   return (
-    <div className="h-[400px] rounded-3xl border border-slate-800 bg-[#0b1222] p-6">
+    <div className="h-[400px] rounded-3xl border border-slate-200 bg-white p-6">
 
       <p className="font-medium">
         {title}
       </p>
 
-      <p className="mt-1 text-xs text-slate-500">
+      <p className="mt-1 text-xs text-slate-600">
         {subtitle}
       </p>
 
@@ -1803,9 +1514,9 @@ function InsightCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-[#0b1222] p-6">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6">
 
-      <p className="text-xs uppercase tracking-[0.15em] text-slate-500">
+      <p className="text-xs uppercase tracking-[0.15em] text-slate-600">
         {title}
       </p>
 
@@ -1813,7 +1524,7 @@ function InsightCard({
         {value}
       </p>
 
-      <p className="mt-4 text-sm leading-6 text-slate-500">
+      <p className="mt-4 text-sm leading-6 text-slate-600">
         {description}
       </p>
 
@@ -1829,13 +1540,13 @@ function MiniScore({
   score: number;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
 
       <p className="text-xs text-slate-600">
         {label}
       </p>
 
-      <p className="mt-2 text-2xl font-semibold text-violet-300">
+      <p className="mt-2 text-2xl font-semibold text-violet-700">
         {score}
       </p>
 
@@ -1857,7 +1568,7 @@ function SmallField({
         {label}
       </p>
 
-      <p className="mt-2 text-sm leading-6 text-slate-300">
+      <p className="mt-2 text-sm leading-6 text-slate-700">
         {safeText(value)}
       </p>
 
@@ -1892,17 +1603,17 @@ function CopyBox({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
 
       <div className="flex items-center justify-between">
 
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-600">
           {label}
         </p>
 
         <button
           onClick={copy}
-          className="text-xs text-blue-400"
+          className="text-xs text-blue-700"
         >
           {copied
             ? "Copied ✓"
@@ -1911,7 +1622,7 @@ function CopyBox({
 
       </div>
 
-      <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-300">
+      <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-700">
         {text}
       </p>
 
@@ -1919,7 +1630,7 @@ function CopyBox({
   );
 }
 
-function DarkTooltip({
+function ResearchTooltip({
   active,
   payload,
   label,
@@ -1938,10 +1649,10 @@ function DarkTooltip({
   }
 
   return (
-    <div className="rounded-xl border border-slate-700 bg-[#0f172a] px-4 py-3 shadow-2xl">
+    <div className="rounded-xl border border-slate-300 bg-white px-4 py-3 shadow-2xl">
 
       {label && (
-        <p className="mb-1 text-xs text-slate-400">
+        <p className="mb-1 text-xs text-slate-600">
           {label}
         </p>
       )}
