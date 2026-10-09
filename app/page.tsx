@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import ResearchLanding from "./components/ResearchLanding";
+import Brand from "./components/Brand";
 import ProspectingWorkspace from "./components/ProspectingWorkspace";
 import {
   Bar,
@@ -502,23 +503,7 @@ Best`
 
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-slate-200 bg-white px-5 py-6 lg:block">
 
-          <div className="mb-8 flex items-center gap-3">
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
-              ✳
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                GTM Genome
-              </p>
-
-              <p className="text-xs text-slate-600">
-                Quick Scan
-              </p>
-            </div>
-
-          </div>
+          <div className="mb-9 px-2"><Brand /><p className="mt-3 text-[10px] uppercase tracking-[.15em] text-slate-500">Research workspace</p></div>
 
           <nav className="space-y-1 text-sm">
 
@@ -564,7 +549,7 @@ Best`
 
           </nav>
 
-          <div className="absolute bottom-6 left-5 right-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="absolute bottom-6 left-5 right-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
 
             <p className="text-xs text-slate-600">
               Built by
@@ -606,7 +591,7 @@ Best`
 
             <div className="flex flex-col gap-3 md:flex-row">
 
-              <div className="flex flex-1 rounded-2xl border border-slate-200 bg-white">
+              <div className="flex flex-1 rounded-lg border border-slate-200 bg-white">
 
                 <input
                   value={url}
@@ -621,7 +606,7 @@ Best`
                 <button
                   onClick={analyze}
                   disabled={loading}
-                  className="m-1 rounded-xl bg-violet-600 text-white hover:bg-violet-700 px-5 py-2.5 text-sm font-medium"
+                  className="m-1 rounded-xl bg-[#30392b] text-white hover:bg-[#4d5c43] px-5 py-2.5 text-sm font-medium"
                 >
                   Analyze
                 </button>
@@ -661,7 +646,7 @@ Best`
 
             <section
               id="overview"
-              className="rounded-3xl border border-slate-200 bg-white p-7"
+              className="rounded-xl border border-slate-200 bg-white p-7"
             >
 
               <div className="grid gap-8 xl:grid-cols-[1fr_240px]">
@@ -1084,7 +1069,7 @@ Best`
 
             <section
               id="evidence"
-              className="mt-5 rounded-3xl border border-slate-200 bg-white p-6"
+              className="mt-5 rounded-xl border border-slate-200 bg-white p-6"
             >
 
               <div className="flex items-center justify-between">
@@ -1120,7 +1105,7 @@ Best`
                         key={
                           index
                         }
-                        className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                        className="rounded-lg border border-slate-200 bg-slate-50 p-5"
                       >
 
                         <div className="flex flex-col gap-3 md:flex-row md:justify-between">
@@ -1186,7 +1171,7 @@ Best`
               className="mt-5 grid gap-5 xl:grid-cols-2"
             >
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-7">
+              <div className="rounded-xl border border-slate-200 bg-white p-7">
 
                 <p className="text-sm font-medium text-violet-700">
                   Recommended GTM Experiment
@@ -1263,7 +1248,7 @@ Best`
                         true
                       )
                     }
-                    className="flex-1 rounded-xl bg-violet-600 text-white hover:bg-violet-700 px-5 py-3 text-sm font-medium"
+                    className="flex-1 rounded-xl bg-[#30392b] text-white hover:bg-[#4d5c43] px-5 py-3 text-sm font-medium"
                   >
                     {savedExperiment
                       ? "✓ Experiment Saved"
@@ -1287,7 +1272,7 @@ Best`
 
               <div
                 id="outreach"
-                className="rounded-3xl border border-slate-200 bg-white p-7"
+                className="rounded-xl border border-slate-200 bg-white p-7"
               >
 
                 <p className="text-sm font-medium text-blue-700">
@@ -1445,7 +1430,7 @@ function ScoreCard({
   color: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+    <div className="rounded-lg border border-slate-200 bg-white p-5">
 
       <p className="text-xs text-slate-600">
         {label}
@@ -1486,7 +1471,7 @@ function ChartCard({
   children: ReactNode;
 }) {
   return (
-    <div className="h-[400px] rounded-3xl border border-slate-200 bg-white p-6">
+    <div className="h-[400px] rounded-xl border border-slate-200 bg-white p-6">
 
       <p className="font-medium">
         {title}
@@ -1514,7 +1499,7 @@ function InsightCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6">
+    <div className="rounded-lg border border-slate-200 bg-white p-6">
 
       <p className="text-xs uppercase tracking-[0.15em] text-slate-600">
         {title}
@@ -1540,7 +1525,7 @@ function MiniScore({
   score: number;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
 
       <p className="text-xs text-slate-600">
         {label}
@@ -1603,7 +1588,7 @@ function CopyBox({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
 
       <div className="flex items-center justify-between">
 
